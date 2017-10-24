@@ -1,5 +1,6 @@
 import numpy as np
-from ttt import possible_moves, leaf_node_value, TicTacToePosition, current_player, toArray
+from pyramido import possible_moves, leaf_node_value, PyramidoPosition, current_player, toArray
+# from ttt import possible_moves, leaf_node_value, TicTacToePosition, current_player, toArray
 
 class Node(object):
     def __init__(self, position, priors):
@@ -94,7 +95,7 @@ def pol(position):
         distribution[m] = 1.0 / len(moves)
     return distribution, val(position)
 
-def play():
+def playTTT():
     iterations = 1000
     position = TicTacToePosition(toArray(0))
     dist, value = MCTS(pol, position, iterations)
@@ -108,3 +109,58 @@ def play():
                 break
         dist, value = MCTS(pol, position, iterations)
         print('assessed value: %f' % value)
+
+def pyramido_policy(position):
+    moves = possible_moves(position)  # game must define this
+    bottom_row_moves = []
+    other_moves = []
+    for m in moves:
+        if np.logical_and.reduce(m.array()[0] == position.array()[0]):
+            other_moves.append(m)
+        else:
+            bottom_row_moves.append(m)
+
+    bottom_row_weight = 1.0
+    if not other_moves:
+        bottom_row_weight = 1.0
+    if not bottom_row_moves:
+        bottom_row_weight = 0.0
+
+    distribution = {}
+    for m in bottom_row_moves:
+        distribution[m] = bottom_row_weight / len(bottom_row_moves)
+    for m in other_moves:
+        distribution[m] = (1.0 - bottom_row_weight) / len(other_moves)
+    return distribution, val(position)
+
+
+def humanPickMove(position):
+    moves = possible_moves(position)
+    for i, m in enumerate(moves):
+        print('Option %d:\n%s\n' % (i, str(m)))
+    selection = int(input('Selection:\n'))
+    return moves[selection]
+
+def computerPickMove(position, iterations):
+    dist, value = MCTS(pyramido_policy, position, iterations)
+    print('\nassessed value: %f' % value)
+    max_probability = max(dist.values())
+    for move, probability in dist.items():
+        if probability == max_probability:
+            return move
+
+
+def playPyramido(human=0, iterations=1000):
+    movenumber = 1
+    position = PyramidoPosition(toArray(1))
+    player = 1
+    while possible_moves(position):
+        if player == human:
+            position = humanPickMove(position)
+        else:
+            position = computerPickMove(position, iterations)
+        print('Move %d: Player %d moves to\n%s'
+                % (movenumber, player, str(position)))
+        movenumber += 1
+        player = 3 - player
+
