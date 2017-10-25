@@ -56,6 +56,21 @@ class PyramidoPosition(object):
     def array(self):
         return toArray(self.int)
 
+    def nn_format(self):
+        a = self.array()
+        result = np.zeros((2, 31))
+        i = 0
+        for h in range(5):
+            for x in range(8):
+                if x > 7 - h:
+                    continue
+                if a[h, x] != 0:
+                    result[a[h, x] - 1, i] = 1
+                i += 1
+        result[a[4, 7] - 1, 30] = 1  # current player
+        return result
+
+
     def __str__(self):
         a = self.array()
         s = ''

@@ -67,6 +67,7 @@ def MCTS(policy, position, iterations, temperature=1.0):
     nodes = {position: Node(position, priors)}
     for _ in range(iterations):
         nodes[position].visit(nodes, policy)
+        print('.', end='', flush=True)
 
     visit_counts = [e.visit_count for e in nodes[position].edges]
     distribution = np.power(visit_counts, 1.0 / temperature)
@@ -164,3 +165,7 @@ def playPyramido(human=0, iterations=1000):
         movenumber += 1
         player = 3 - player
 
+if __name__ == '__main__':
+    # TODO: play with neural net model as policy network
+    # TODO: generate training data
+    playPyramido(0, 40)
