@@ -117,7 +117,8 @@ int fall(const Square &current, const Square (&board)[HT][WD]) {
 	return 0;
 }
 
-int legalmove(int i, int j, int lr, const Square &current, const Square (&board)[HT][WD]) {
+int legalmove(int i, int j, int lr, const Square &current,
+              const Square (&board)[HT][WD]) {
 	if ((i < 0) || (j < 0) || (i > HT - 1) || (j + HT > i + WD)) return 0;
 	if (board[i][j] != EMP) return 0;
 	if (fall(current, board)) {
@@ -166,9 +167,10 @@ int evaluate(const Square &plyr, const Square (&board)[HT][WD]) {
 }
 
 // nega-alpha-beta search,
-int search(int depth, int alpha, int beta, int top, Square &current, Square (&board)[HT][WD]) {
-	int k, i, j, fval, lr, value, localalpha = alpha, hasmove = 0, nearwin = 0;
-	int topsave, sidescheck, bestmoves = 0;
+int search(int depth, int alpha, int beta, int top, Square &current,
+           Square (&board)[HT][WD]) {
+	int i, j, fval, lr, value, localalpha = alpha, hasmove = 0, nearwin = 0;
+	int sidescheck, bestmoves = 0;
 
 	if (depth) {
 		fval = fall(current, board);
@@ -201,7 +203,8 @@ int search(int depth, int alpha, int beta, int top, Square &current, Square (&bo
 						current = SW(current);
 
 						// make the recursive call
-						value = -search(depth - 1, -beta, -localalpha + top, 0, current, board);
+						value =
+						    -search(depth - 1, -beta, -localalpha + top, 0, current, board);
 
 						// undo move
 						current = SW(current);
@@ -280,7 +283,7 @@ int undomove(Square &current, Square (&board)[HT][WD]) {
 }
 
 int main() {
-	int fval, okmove, winner, i;
+	int fval, winner;
 
 	srand(time(0));
 	srand48(time(0));  // seed the random number guys
@@ -384,7 +387,8 @@ int main() {
 		printboard(current, board);
 		printf("\n");
 	}
-	winner = (search(1, LOSE, WIN, 0, current, board) == LOSE) ? SW(current) : current;
+	winner =
+	    (search(1, LOSE, WIN, 0, current, board) == LOSE) ? SW(current) : current;
 	printf("The winner is ");
 	printsquare(winner);
 	printf("!!\n");
